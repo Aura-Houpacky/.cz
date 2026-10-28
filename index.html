@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO OPTIMALIZACE PRO VYHLEDÁVAČE -->
+    <title>AURA Závěsné Houpačky | Ručně vyráběná křesla pro domov a zahradu</title>
+    <meta name="description" content="Hledáte dokonalou relaxaci? AURA designové závěsné houpačky a křesla jsou vyráběny ručně z udržitelných materiálů. Objevte čisté pohodlí ještě dnes.">
+    <meta name="keywords" content="houpačka, závěsné křeslo, zahradní houpačka, designové houpačky, houpací křeslo, ručně vyráběné houpačky, Aura houpačky">
+    
+    <!-- Hlavní nadpisy pro vyhledávací roboty -->
+    <meta name="robots" content="index, follow">
+    
+    <!-- Propojení se samostatným CSS souborem -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <div class="logo" onclick="navigateTo('home')">Aura Houpačky</div>
+        <nav>
+            <ul>
+                <li><a id="nav-home" class="active" onclick="navigateTo('home')">Domů</a></li>
+                <li><a id="nav-collection" onclick="navigateTo('collection')">Kolekce</a></li>
+                <li><a id="nav-sustainability" onclick="navigateTo('sustainability')">Udržitelnost</a></li>
+                <li><a id="nav-contact" onclick="navigateTo('contact')">Kontakt</a></li>
+            </ul>
+        </nav>
+        <div class="cart-icon">🛒</div>
+    </header>
+
+    <!-- ÚVODNÍ STRÁNKA -->
+    <main id="page-home" class="page-section container active">
+        <div class="hero-container">
+            <section class="main-banner">
+                <div class="hero-text">
+                    <h1>Objevte čistou<br>relaxaci</h1>
+                    <p>Udržitelné & Komfortní Závěsné Křesla pro Váš Domov</p>
+                </div>
+                <a class="cta-button" onclick="navigateTo('collection')">Prohlédnout kolekci</a>
+                <div class="main-image-wrapper">
+                    <img src="img/7.jpg" alt="Béžová houpačka" class="main-image">
+                </div>
+            </section>
+
+            <aside class="side-gallery">
+                <div class="material-card">
+                    <div class="image-hexagon">
+                        <img src="img/8.jpg" alt="Zelená varianta látky">
+                    </div>
+                    <span>Organická bavlna</span>
+                </div>
+                <div class="material-card">
+                    <div class="image-hexagon">
+                        <img src="img/4.jpg" alt="Přírodní dřevěná rozpěra">
+                    </div>
+                    <span>Masivní dřevo</span>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <!-- KOLEKCE -->
+    <div id="page-collection" class="page-section container">
+        <h1 class="section-title">Naše Kolekce</h1>
+        <p class="section-subtitle">Vyberte si ideální harmonii a barevný odstín pro váš interiér i zahradu.</p>
+        
+        <div class="products-grid">
+            <div class="product-card">
+                <div class="product-image-bg">
+                    <img src="img/9.jpg" alt="Aura Sand">
+                </div>
+                <h3>Aura Sand (Béžová)</h3>
+                <div class="product-price">4 490 Kč</div>
+                <button class="buy-button">Přidat do košíku</button>
+            </div>
+
+            <div class="product-card">
+                <div class="product-image-bg">
+                    <img src="img/8.jpg" alt="Aura Moss">
+                </div>
+                <h3>Aura Moss (Zelená)</h3>
+                <div class="product-price">4 490 Kč</div>
+                <button class="buy-button">Přidat do košíku</button>
+            </div>
+
+            <div class="product-card">
+                <div class="product-image-bg">
+                    <img src="img/5.jpg" alt="Aura Earth">
+                </div>
+                <h3>Aura Earth (Hnědá)</h3>
+                <div class="product-price">4 690 Kč</div>
+                <button class="buy-button">Přidat do košíku</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- UDRŽITELNOST -->
+    <div id="page-sustainability" class="page-section container">
+        <h1 class="section-title">Udržitelnost v srdci</h1>
+        <p class="section-subtitle">Jak vznikají křesla, která respektují přírodu i vaše pohodlí.</p>
+        
+        <div class="sustainability-layout">
+            <div class="sustainability-text">
+                <h2>Látky, které dýchají</h2>
+                <p>Naše závěsná křesla šijeme výhradně z certifikovaných a recyklovaných materiálů, které mají minimální ekologickou stopu, ale maximální odolnost proti oděru a zašpinění.</p>
+                
+                <h2>Ručně opracované dřevo</h2>
+                <p>Každá rozpěrná tyč je originál. Využíváme dřevo z lokálních, udržitelně obhospodařovaných lesů s certifikací FSC.</p>
+
+                <h2>Etická lokální výroba</h2>
+                <p>Neprodukujeme věci na běžícím pásu na druhém konci světa. Celý proces od návrhu provádíme lokálně za férových podmínek.</p>
+            </div>
+            <div class="sustainability-image">
+                <img src="img/1.jpg" alt="Přírodní materiály">
+            </div>
+        </div>
+    </div>
+
+    <!-- KONTAKT -->
+    <div id="page-contact" class="page-section container">
+        <div class="contact-layout">
+            <div class="contact-info">
+                <h2>Napište nám</h2>
+                <p>Máte dotaz k nosnosti, instalaci do stropu nebo zakázkovým barvám? Rádi vám se vším poradíme.</p>
+                
+                <div class="contact-details">
+                    <div class="contact-item">
+                        <div class="contact-item-icon">📍</div>
+                        <div><strong>Adresa:</strong> Pražská 124, Praha</div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-item-icon">✉️</div>
+                        <div><strong>E-mail:</strong> info@aurahoupacky.cz</div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-item-icon">📞</div>
+                        <div><strong>Telefon:</strong> +420 777 123 456</div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <form class="contact-form" onsubmit="event.preventDefault(); alert('Zpráva byla úspěšně odeslána!');">
+                    <div class="form-group">
+                        <label for="name">Jméno a příjmení</label>
+                        <input type="text" id="name" required placeholder="Jan Novák">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">E-mail</label>
+                        <input type="email" id="email" required placeholder="jan.novak@email.cz">
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Vaše zpráva</label>
+                        <textarea id="message" rows="5" required placeholder="Jak vám můžeme pomoci?"></textarea>
+                    </div>
+                    <button type="submit" class="buy-button" style="padding: 12px 30px; border-radius: 15px;">Odeslat zprávu</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 AURA Houpačky. Všechna práva vyhrazena. | Vyrobeno s láskou k čistému designu.</p>
+    </footer>
+
+    <!-- JavaScript pro funkční přepínání podstránek -->
+    <script>
+        function navigateTo(pageId) {
+            const sections = document.querySelectorAll('.page-section');
+            sections.forEach(section => section.classList.remove('active'));
+
+            const navLinks = document.querySelectorAll('nav a');
+            navLinks.forEach(link => link.classList.remove('active'));
+
+            const activeSection = document.getElementById('page-' + pageId);
+            if(activeSection) {
+                activeSection.classList.add('active');
+            }
+
+            const activeLink = document.getElementById('nav-' + pageId);
+            if(activeLink) {
+                activeLink.classList.add('active');
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
