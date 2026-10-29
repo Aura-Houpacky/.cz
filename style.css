@@ -213,10 +213,17 @@ nav a:hover, nav a.active {
     text-align: center;
 }
 
+.product-title {
+    text-align: center;
+    margin-top: 25px;
+    margin-bottom: 20px;
+    font-size: 40px;
+}
+
 .section-subtitle {
     text-align: center;
     color: #777;
-    margin-bottom: 40px;
+    margin-bottom: 0px;
 }
 
 .products-grid {
@@ -242,19 +249,20 @@ nav a:hover, nav a.active {
 .product-image-bg {
     background-color: #f0f2ee;
     border-radius: 20px;
-    padding: 0; /* Odstraněno vnitřní volné místo */
+    padding: 0;
     margin-bottom: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 280px;
-    overflow: hidden; /* Zaoblí i rohy vloženého obrázku */
+    height: 280px;      /* Fixní výška rámečku – obrázek se už nebude zmenšovat */
+    width: 100%;        /* Vyplní celou šířku karty */
+    overflow: hidden;   
 }
 
 .product-image-bg img {
-    width: 100%; /* Obrázek se roztáhne na celou šířku rámečku */
-    height: 100%; /* Obrázek se roztáhne na celou výšku rámečku */
-    object-fit: cover; /* Obrázek vyplní celý prostor bez deformace */
+    width: 100%;        /* Obrázek se roztáhne na celou šířku rámečku */
+    height: 100%;       /* Obrázek se roztáhne na celou výšku rámečku */
+    object-fit: cover;  /* Vyplní celý prostor bez deformace nebo nechtěného zmenšení */
 }
 
 .product-card h3 {
@@ -424,3 +432,16 @@ footer {
         margin-top: 20px;
     }
 }
+
+/* Styly pro exteriérové šedé boxy, které teď používají pozadí */
+#page-collection .products-grid:last-of-type .product-image-bg {
+    background-position: center center;
+    background-repeat: no-repeat;
+    
+    /* KLÍČOVÝ TRIK: Procento určuje velikost (oddálení) houpačky. 
+       Normální plná velikost bez ořezu po stranách je kolem 140%-150%.
+       Čím MENŠÍ procento dáš (např. 120%), tím víc bude houpačka ODDÁLENÁ.
+       Zkoušej hodnoty mezi 110% až 150%, dokud to nebude ono. */
+    background-size: 100%; 
+}
+
