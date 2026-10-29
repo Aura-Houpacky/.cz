@@ -94,7 +94,6 @@ nav a:hover, nav a.active {
     border-radius: 40px 150px 40px 40px;
     padding: 60px;
     position: relative;
-    overflow: hidden;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -139,16 +138,22 @@ nav a:hover, nav a.active {
 
 .main-image-wrapper {
     position: absolute;
-    right: -20px;
-    bottom: -20px;
-    width: 55%;
-    height: 80%;
+    right: -25px;
+    bottom: -50px;
+    width: 100%;
+    height: 70%;
+    max-width: 300px;
+    max-height: 500px;
+    overflow: hidden;
 }
 
 .main-image {
     width: 100%;
     height: 100%;
+    border-radius: 20px 40px 20px 20px;
     object-fit: contain;
+    object-fit: cover;
+    
 }
 
 .side-gallery {
@@ -182,9 +187,11 @@ nav a:hover, nav a.active {
     height: 100%;
     object-fit: cover;
     transition: transform 0.5s;
+    
+    object-position: 90% 90%;
 }
 
-.material-card:hover img {
+.image-hexagon:hover img {
     transform: scale(1.1);
 }
 
@@ -282,7 +289,7 @@ nav a:hover, nav a.active {
 .sustainability-layout {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 50px;
+    gap: 100px;
     align-items: center;
     margin-top: 20px;
 }
@@ -300,15 +307,16 @@ nav a:hover, nav a.active {
 }
 
 .sustainability-image {
-    background-color: #d1d7cd;
+    border: 20px solid #d1d7cd;
     border-radius: 100px 40px 100px 40px;
     padding: 40px;
     display: flex;
     justify-content: center;
+    max-height: 470px;
 }
 
 .sustainability-image img {
-    width: 100%;
+    width: 90%;
     border-radius: 60px 20px 60px 20px;
     object-fit: cover;
 }
