@@ -196,7 +196,7 @@ nav a:hover, nav a.active {
     font-weight: 600;
 }
 
-/* --- 2. STRÁNKA: KOLEKCE --- */
+/* --- 2. STRÁNKA: KOLEKCE (ZDE PROBĚHLA ÚPRAVA OBRÁZKŮ) --- */
 .section-title {
     font-size: 2.2rem;
     color: #4a5d4e;
@@ -235,17 +235,19 @@ nav a:hover, nav a.active {
 .product-image-bg {
     background-color: #f0f2ee;
     border-radius: 20px;
-    padding: 20px;
+    padding: 0; /* Odstraněno vnitřní volné místo */
     margin-bottom: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 280px;
+    overflow: hidden; /* Zaoblí i rohy vloženého obrázku */
 }
 
 .product-image-bg img {
-    max-height: 100%;
-    object-fit: contain;
+    width: 100%; /* Obrázek se roztáhne na celou šířku rámečku */
+    height: 100%; /* Obrázek se roztáhne na celou výšku rámečku */
+    object-fit: cover; /* Obrázek vyplní celý prostor bez deformace */
 }
 
 .product-card h3 {
@@ -280,7 +282,7 @@ nav a:hover, nav a.active {
 .sustainability-layout {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 100px;
+    gap: 50px;
     align-items: center;
     margin-top: 20px;
 }
@@ -298,8 +300,7 @@ nav a:hover, nav a.active {
 }
 
 .sustainability-image {
-    max-height: 470px;
-    border: 20px solid #d1d7cd;
+    background-color: #d1d7cd;
     border-radius: 100px 40px 100px 40px;
     padding: 40px;
     display: flex;
@@ -307,7 +308,7 @@ nav a:hover, nav a.active {
 }
 
 .sustainability-image img {
-    width: 90%;
+    width: 100%;
     border-radius: 60px 20px 60px 20px;
     object-fit: cover;
 }
