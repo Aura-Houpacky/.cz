@@ -314,3 +314,16 @@ function sortProducts(selectElement) {
     // Fyzicky přerovná karty v HTML kódu
     cards.forEach(card => grid.appendChild(card));
 }
+
+
+// Automaticky vymaže text z kolonek, jakmile se formulář odešle na internet
+document.addEventListener("DOMContentLoaded", () => {
+    const form = document.querySelector('.contact-form');
+    if (form) {
+        form.addEventListener('submit', () => {
+            setTimeout(() => {
+                form.reset(); // Vymaže jméno, e-mail i zprávu
+            }, 500); // Počká půl vteřiny, než Formspree data odešle, a pak políčka vyčistí
+        });
+    }
+});
