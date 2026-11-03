@@ -538,7 +538,15 @@
                 <span>Celková částka:</span>
                 <strong id="cart-total-price">0 Kč</strong>
             </div>
-            <button class="checkout-button" onclick="checkoutOrder()">Zaplatit</button>
+            <!-- ÚDAJE ZÁKAZNÍKA K OBJEDNÁVCE (e-mail je nepovinný) -->
+            <div class="checkout-form">
+                <input type="text" id="order-name" placeholder="Jméno a příjmení *">
+                <input type="tel" id="order-phone" placeholder="Telefon *">
+                <input type="text" id="order-address" placeholder="Doručovací adresa *">
+                <input type="email" id="order-email" placeholder="E-mail (nepovinné)">
+                <textarea id="order-note" rows="2" placeholder="Poznámka (nepovinné)"></textarea>
+            </div>
+            <button class="checkout-button" id="checkout-btn" onclick="checkoutOrder()">Koupit</button>
         </div>
     </div>
 </div>
