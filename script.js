@@ -268,8 +268,8 @@ async function checkoutOrder() {
     const email = document.getElementById('order-email').value.trim();
     const note = document.getElementById('order-note').value.trim();
 
-    if (!name || !phone || !address) {
-        alert('Vyplňte prosím jméno, telefon a doručovací adresu, abychom vás mohli kontaktovat.');
+    if (!name || !phone || !address || !email) {
+        alert('Vyplňte prosím jméno, telefon, doručovací adresu a e-mail, abychom vás mohli kontaktovat.');
         return;
     }
 
@@ -285,9 +285,9 @@ async function checkoutOrder() {
         return;
     }
 
-    // E-mail se nekontroluje, když je prázdný – objednávka jde odeslat i bez něj
-    if (email && !isValidEmail(email)) {
-        alert('E-mail nemá správný tvar. Opravte ho, nebo políčko nechte prázdné.');
+    // E-mail je povinný a musí mít správný tvar
+    if (!isValidEmail(email)) {
+        alert('E-mail nemá správný tvar. Zadejte ho prosím ve tvaru jan.novak@email.cz.');
         document.getElementById('order-email').focus();
         return;
     }
@@ -309,14 +309,9 @@ async function checkoutOrder() {
         celkem: total.toLocaleString('cs-CZ') + ' Kč',
         poznamka: note || '-'
     };
-    // Formspree pole "email" kontroluje – když by v něm byl text "nevyplněn",
-    // celou objednávku odmítne. Proto ho posíláme JEN když ho zákazník vyplnil.
-    if (email) {
-        data.email = email;
-        data._replyto = email; // z e-mailu mu pak můžete rovnou odpovědět
-    } else {
-        data.kontakt = 'Zákazník nevyplnil e-mail – kontaktujte ho telefonicky';
-    }
+    // E-mail zákazníka – z e-mailu s objednávkou mu pak můžete rovnou odpovědět
+    data.email = email;
+    data._replyto = email;
 
     const btn = document.getElementById('checkout-btn');
     btn.disabled = true;
