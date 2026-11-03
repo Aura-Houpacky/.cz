@@ -900,6 +900,36 @@ nav a:hover, nav a.active {
     background-color: #38483b;
 }
 
+.checkout-button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+/* Údaje zákazníka v košíku */
+.checkout-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.checkout-form input,
+.checkout-form textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d8dcd5;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    background-color: #ffffff;
+    resize: vertical;
+}
+
+.checkout-form input:focus,
+.checkout-form textarea:focus {
+    outline: none;
+    border-color: #4a5d4e;
+}
+
 /* ==========================================================================
    13. SPOLEČNÁ PATIČKA (FOOTER)
    ========================================================================== */
