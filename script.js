@@ -233,6 +233,29 @@ function updateCartUI() {
 // ODESLÁNÍ OBJEDNÁVKY E-MAILEM PŘES FORMSPREE (stejný formulář jako v Kontaktu)
 const ORDER_FORM_URL = 'https://formspree.io/f/mjyyppgo';
 
+// Kontrola, jestli adresa vypadá smysluplně (např. "Hlavní 12, 284 01 Kutná Hora")
+function isValidAddress(address) {
+    if (address.length < 8) return false;                       // příliš krátká
+    if (!/\d/.test(address)) return false;                      // chybí číslo domu
+    if (!/[a-zA-ZÀ-ž]{3,}/.test(address)) return false;          // chybí název ulice / obce
+    if (/(.)\1{3,}/i.test(address)) return false;                // "aaaa", "1111" apod.
+    const letters = address.toLowerCase().replace(/[^a-zà-ž]/g, '');
+    if (new Set(letters).size < 4) return false;                // málo různých písmen ("abab 1")
+    if (!/[aeiouyáéěíóúůý]/i.test(letters)) return false;       // žádná samohláska ("xkcd 5")
+    return true;
+}
+
+// Kontrola telefonu: 9 číslic, případně s předvolbou +420 / 00420
+function isValidPhone(phone) {
+    const digits = phone.replace(/[\s\-\/()]/g, '');
+    return /^(\+|00)?\d{9,12}$/.test(digits);
+}
+
+// E-mail je nepovinný, ale když ho někdo vyplní, musí mít správný tvar
+function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
+}
+
 async function checkoutOrder() {
     if(cart.length === 0) {
         alert('Košík je prázdný. Přidejte nejdříve nějakou houpačku.');
@@ -250,6 +273,25 @@ async function checkoutOrder() {
         return;
     }
 
+    if (!isValidAddress(address)) {
+        alert('Zadejte prosím skutečnou doručovací adresu, např. „Hlavní 12, 284 01 Kutná Hora“.');
+        document.getElementById('order-address').focus();
+        return;
+    }
+
+    if (!isValidPhone(phone)) {
+        alert('Zadejte prosím platné telefonní číslo, např. 608 123 456.');
+        document.getElementById('order-phone').focus();
+        return;
+    }
+
+    // E-mail se nekontroluje, když je prázdný – objednávka jde odeslat i bez něj
+    if (email && !isValidEmail(email)) {
+        alert('E-mail nemá správný tvar. Opravte ho, nebo políčko nechte prázdné.');
+        document.getElementById('order-email').focus();
+        return;
+    }
+
     // Sestavení přehledu objednávky do textu e-mailu
     let total = 0;
     const lines = cart.map(item => {
@@ -263,13 +305,18 @@ async function checkoutOrder() {
         jmeno: name,
         telefon: phone,
         adresa: address,
-        email: email || 'nevyplněn',
         objednavka: lines.join('\n'),
         celkem: total.toLocaleString('cs-CZ') + ' Kč',
         poznamka: note || '-'
     };
-    // Když zákazník e-mail vyplní, můžete mu z e-mailu rovnou odpovědět
-    if (email) data._replyto = email;
+    // Formspree pole "email" kontroluje – když by v něm byl text "nevyplněn",
+    // celou objednávku odmítne. Proto ho posíláme JEN když ho zákazník vyplnil.
+    if (email) {
+        data.email = email;
+        data._replyto = email; // z e-mailu mu pak můžete rovnou odpovědět
+    } else {
+        data.kontakt = 'Zákazník nevyplnil e-mail – kontaktujte ho telefonicky';
+    }
 
     const btn = document.getElementById('checkout-btn');
     btn.disabled = true;
@@ -282,7 +329,11 @@ async function checkoutOrder() {
             body: JSON.stringify(data)
         });
 
-        if (!response.ok) throw new Error('Chyba ' + response.status);
+        if (!response.ok) {
+            // Vypíše do konzole přesný důvod, proč Formspree objednávku odmítl
+            const errData = await response.json().catch(() => ({}));
+            throw new Error('Chyba ' + response.status + ': ' + JSON.stringify(errData));
+        }
 
         alert('Děkujeme za objednávku! Brzy se vám ozveme.');
         cart = [];
