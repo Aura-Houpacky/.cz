@@ -230,15 +230,73 @@ function updateCartUI() {
     totalElement.innerText = totalSum.toLocaleString('cs-CZ') + ' Kč';
 }
 
-function checkoutOrder() {
+// ODESLÁNÍ OBJEDNÁVKY E-MAILEM PŘES FORMSPREE (stejný formulář jako v Kontaktu)
+const ORDER_FORM_URL = 'https://formspree.io/f/mjyyppgo';
+
+async function checkoutOrder() {
     if(cart.length === 0) {
         alert('Košík je prázdný. Přidejte nejdříve nějakou houpačku.');
         return;
     }
-    alert('Děkujeme za objednávku! Nyní byste byl přesměrován na platební bránu.');
-    cart = [];
-    updateCartUI();
-    toggleCart();
+
+    const name = document.getElementById('order-name').value.trim();
+    const phone = document.getElementById('order-phone').value.trim();
+    const address = document.getElementById('order-address').value.trim();
+    const email = document.getElementById('order-email').value.trim();
+    const note = document.getElementById('order-note').value.trim();
+
+    if (!name || !phone || !address) {
+        alert('Vyplňte prosím jméno, telefon a doručovací adresu, abychom vás mohli kontaktovat.');
+        return;
+    }
+
+    // Sestavení přehledu objednávky do textu e-mailu
+    let total = 0;
+    const lines = cart.map(item => {
+        const itemTotal = item.price * item.quantity;
+        total += itemTotal;
+        return `${item.title} – ${item.quantity} ks × ${item.price.toLocaleString('cs-CZ')} Kč = ${itemTotal.toLocaleString('cs-CZ')} Kč`;
+    });
+
+    const data = {
+        _subject: `Nová objednávka od: ${name}`,
+        jmeno: name,
+        telefon: phone,
+        adresa: address,
+        email: email || 'nevyplněn',
+        objednavka: lines.join('\n'),
+        celkem: total.toLocaleString('cs-CZ') + ' Kč',
+        poznamka: note || '-'
+    };
+    // Když zákazník e-mail vyplní, můžete mu z e-mailu rovnou odpovědět
+    if (email) data._replyto = email;
+
+    const btn = document.getElementById('checkout-btn');
+    btn.disabled = true;
+    btn.innerText = 'Odesílám…';
+
+    try {
+        const response = await fetch(ORDER_FORM_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify(data)
+        });
+
+        if (!response.ok) throw new Error('Chyba ' + response.status);
+
+        alert('Děkujeme za objednávku! Brzy se vám ozveme.');
+        cart = [];
+        updateCartUI();
+        ['order-name','order-phone','order-address','order-email','order-note']
+            .forEach(id => document.getElementById(id).value = '');
+        toggleCart();
+    } catch (err) {
+        console.error(err);
+        alert('Objednávku se nepodařilo odeslat. Zkuste to prosím znovu, nebo nám zavolejte.');
+    } finally {
+        btn.disabled = false;
+        btn.innerText = 'Koupit';
+    }
 }
 
 // AUTOMATICKÉ NAVÁZÁNÍ PROKLIKŮ NA VŠECHNY TVÉ KARTY
@@ -314,7 +372,6 @@ function sortProducts(selectElement) {
     // Fyzicky přerovná karty v HTML kódu
     cards.forEach(card => grid.appendChild(card));
 }
-
 
 // Automaticky vymaže text z kolonek, jakmile se formulář odešle na internet
 document.addEventListener("DOMContentLoaded", () => {
