@@ -152,16 +152,18 @@ function isValidEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
 }
 
-// Funkce, která se spustí po kliknutí na tlačítko "Předobjednat na únor"
 async function submitPreorder(event) {
-    event.preventDefault(); // Zabrání klasickému přesměrování stránky
+    event.preventDefault(); // Zabrání obnovení stránky
 
-    const productName = document.getElementById('modal-title').innerText;
-    const productPrice = document.getElementById('modal-price').innerText;
-    const name = document.getElementById('preorder-name').value.trim();
-    const email = document.getElementById('preorder-email').value.trim();
-    const phone = document.getElementById('preorder-phone').value.trim();
-    const address = document.getElementById('preorder-address').value.trim();
+    const form = event.target;
+    const productName = document.getElementById('modal-title')?.innerText || 'Neznámý produkt';
+    const productPrice = document.getElementById('modal-price')?.innerText || '';
+
+    // Bezpečné načtení hodnot (funguje podle ID i podle typu políčka)
+    const name = (document.getElementById('preorder-name') || form.querySelector('input[type="text"]'))?.value.trim() || '';
+    const email = (document.getElementById('preorder-email') || form.querySelector('input[type="email"]'))?.value.trim() || '';
+    const phone = (document.getElementById('preorder-phone') || form.querySelector('input[type="tel"]'))?.value.trim() || '';
+    const address = (document.getElementById('preorder-address') || form.querySelectorAll('input[type="text"]')[1])?.value.trim() || '';
 
     if (!name || !phone || !address || !email) {
         alert('Vyplňte prosím všechny údaje (jméno, e-mail, telefon i adresu).');
@@ -170,68 +172,78 @@ async function submitPreorder(event) {
 
     if (!isValidAddress(address)) {
         alert('Zadejte prosím skutečnou doručovací adresu, např. „Hlavní 12, 284 01 Kutná Hora“.');
-        document.getElementById('preorder-address').focus();
         return;
     }
 
     if (!isValidPhone(phone)) {
         alert('Zadejte prosím platné telefonní číslo, např. 608 123 456.');
-        document.getElementById('preorder-phone').focus();
         return;
     }
 
     if (!isValidEmail(email)) {
         alert('E-mail nemá správný tvar. Zadejte ho prosím ve tvaru jan.novak@email.cz.');
-        document.getElementById('preorder-email').focus();
         return;
     }
 
-    const data = {
-        _subject: `Předobjednávka na únor: ${productName} (${name})`,
-        Produkt: productName,
-        Cena: productPrice,
-        Jmeno: name,
-        Email: email,
-        _replyto: email,
-        Telefon: phone,
-        Adresa: address
-    };
+    const formData = new FormData();
+    formData.append('_subject', `Předobjednávka na únor: ${productName} (${name})`);
+    formData.append('Produkt', productName);
+    formData.append('Cena', productPrice);
+    formData.append('Jmeno', name);
+    formData.append('Email', email);
+    formData.append('_replyto', email);
+    formData.append('Telefon', phone);
+    formData.append('Adresa', address);
 
-    const btn = document.getElementById('preorder-submit-btn');
-    btn.disabled = true;
-    btn.innerText = 'Odesílám předobjednávku…';
+    const btn = document.getElementById('preorder-submit-btn') || form.querySelector('button[type="submit"]');
+    if (btn) {
+        btn.disabled = true;
+        btn.innerText = 'Odesílám předobjednávku…';
+    }
 
     try {
         const response = await fetch(ORDER_FORM_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify(data)
+            headers: { 'Accept': 'application/json' },
+            body: formData
         });
 
-        if (!response.ok) throw new Error('Chyba odeslání');
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error || 'Chyba serveru ' + response.status);
+        }
 
         alert('Děkujeme za předobjednávku na únor! Brzy se vám ozveme s potvrzením.');
-        document.getElementById('preorder-form').reset(); // Vymaže formulář
-        closeProductModal(); // Zavře okno produktu
+        form.reset();
+        if (typeof closeProductModal === 'function') closeProductModal();
     } catch (err) {
         console.error(err);
-        alert('Předobjednávku se nepodařilo odeslat. Zkuste to prosím znovu.');
+        alert('Chyba při odesílání: ' + err.message);
     } finally {
-        btn.disabled = false;
-        btn.innerText = 'Předobjednat na únor';
+        if (btn) {
+            btn.disabled = false;
+            btn.innerText = 'Předobjednat na únor';
+        }
     }
 }
 
+
 // ==========================================================================
-// NAVÁZÁNÍ PROKLIKŮ NA KARTY PRODUKTŮ
+// NAVÁZÁNÍ PROKLIKŮ NA KARTY PRODUKTŮ A FORMULÁŘE
 // ==========================================================================
 document.addEventListener("DOMContentLoaded", () => {
+    // 1. Prokliky na všechny karty produktů
     const cards = document.querySelectorAll('.product-card');
-    
     cards.forEach(card => {
         card.style.cursor = 'pointer';
-        card.addEventListener('click', () => openProductModal(card));
+        
+        // Kliknutí na celou plochu karty
+        card.addEventListener('click', (e) => {
+            if (e.target.closest('.buy-button')) return; // Nechá obsloužit tlačítko níže
+            openProductModal(card);
+        });
 
+        // Kliknutí přímo na tlačítko uvnitř karty
         const infoBtn = card.querySelector('.buy-button');
         if (infoBtn) {
             infoBtn.addEventListener('click', (e) => {
@@ -242,13 +254,17 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Napojení formuláře předobjednávky
-    const preorderForm = document.getElementById('preorder-form');
+    // 2. Spolehlivé napojení formuláře předobjednávky (hledá podle ID i třídy)
+    const preorderForm = document.getElementById('preorder-form') || document.querySelector('.preorder-form');
     if (preorderForm) {
-        preorderForm.addEventListener('submit', submitPreorder);
+        preorderForm.addEventListener('submit', (e) => {
+            if (typeof submitPreorder === 'function') {
+                submitPreorder(e);
+            }
+        });
     }
 
-    // Automatické promazání kontaktního formuláře
+    // 3. Automatické promazání kontaktního formuláře po odeslání
     const contactForm = document.querySelector('.contact-form');
     if (contactForm) {
         contactForm.addEventListener('submit', () => {
@@ -261,16 +277,23 @@ document.addEventListener("DOMContentLoaded", () => {
 // ŘAZENÍ PRODUKTŮ PODLE CENY
 // ==========================================================================
 function sortProducts(selectElement) {
-    let order = selectElement.value;
+    const order = selectElement.value;
     if (order === 'default') return;
     
-    let grid = selectElement.closest('.filter-sort-bar').nextElementSibling;
-    if (!grid || !grid.classList.contains('products-grid')) return;
+    const bar = selectElement.closest('.filter-sort-bar');
+    if (!bar) return;
+
+    // Najde nejbližší mřížku produktů pod lištou
+    let grid = bar.nextElementSibling;
+    while (grid && !grid.classList.contains('products-grid')) {
+        grid = grid.nextElementSibling;
+    }
+    if (!grid) return;
     
-    let cards = Array.from(grid.querySelectorAll('.product-card'));
+    const cards = Array.from(grid.querySelectorAll('.product-card'));
     cards.sort((a, b) => {
-        let priceA = parseInt(a.getAttribute('data-price')) || 0;
-        let priceB = parseInt(b.getAttribute('data-price')) || 0;
+        const priceA = parseInt(a.getAttribute('data-price')) || 0;
+        const priceB = parseInt(b.getAttribute('data-price')) || 0;
         return order === 'asc' ? priceA - priceB : priceB - priceA;
     });
     
