@@ -28,7 +28,6 @@
                 <li><a id="nav-contact" onclick="navigateTo('contact')">Kontakt</a></li>
             </ul>
         </nav>
-        <div class="cart-icon" onclick="toggleCart()">🛒 <span id="cart-badge" class="cart-badge-style">0</span></div>
     </header>
 
     <!-- 1. STRÁNKA: DOMŮ (ROZŠÍŘENÁ VERZE) -->
@@ -483,11 +482,11 @@
                     <strong>Vyberte odstín:</strong>
                     <div class="color-dots" id="modal-color-dots">
                         <!-- Každé kolečko v sobě nese data o své barvě, fotce a ceně -->
-                        <div class="color-dot" data-color="Béžová" data-img="img/9.jpg" data-price="4 490 Kč" style="background-color: #d7d2c8;" title="Aura Sand (Béžová)"></div>
-                        <div class="color-dot" data-color="Zelená" data-img="img/8.jpg" data-price="4 490 Kč" style="background-color: #7d8471;" title="Aura Moss (Zelená)"></div>
-                        <div class="color-dot" data-color="Hnědá" data-img="img/5.jpg" data-price="4 690 Kč" style="background-color: #8c7d70;" title="Aura Earth (Hnědá)"></div>
-                        <div class="color-dot" data-color="Světle modrá" data-img="img/2.jpg" data-price="4 490 Kč" style="background-color: #a4b7c2;" title="Aura Sky (Světle modrá)"></div>
-                        <div class="color-dot" data-color="Šedá" data-img="img/7.jpg" data-price="4 590 Kč" style="background-color: #949599;" title="Aura Stone (Šedá)"></div>
+                        <div class="color-dot" data-color="Béžová" data-img="img/9.jpg" data-price="13000 Kč" style="background-color: #d7d2c8;" title="Aura Sand (Béžová)"></div>
+                        <div class="color-dot" data-color="Zelená" data-img="img/8.jpg" data-price="12000 Kč" style="background-color: #7d8471;" title="Aura Moss (Zelená)"></div>
+                        <div class="color-dot" data-color="Hnědá" data-img="img/5.jpg" data-price="18000 Kč" style="background-color: #8c7d70;" title="Aura Earth (Hnědá)"></div>
+                        <div class="color-dot" data-color="Světle modrá" data-img="img/2.jpg" data-price="19000 Kč" style="background-color: #a4b7c2;" title="Aura Sky (Světle modrá)"></div>
+                        <div class="color-dot" data-color="Šedá" data-img="img/7.jpg" data-price="11000 Kč" style="background-color: #949599;" title="Aura Stone (Šedá)"></div>
                     </div>
                 </div>
                 
@@ -501,9 +500,29 @@
                     </div>
                 </div>
 
-                <button class="buy-button modal-buy-btn"">
-                    Přidat do košíku
-                </button>
+                <div class="preorder-box">
+                    <h3>Předobjednat na únor</h3>
+                    <p class="preorder-note">Zarezervujte si tento model nezávazně. Ozveme se vám s potvrzením.</p>
+
+                    <form id="preorder-form" class="preorder-form" action="https://formspree.io/f/xgakaalk" method="post">
+                        <div class="form-group">
+                            <input type="text" id="preorder-name" required placeholder="Vaše jméno a příjmení">
+                        </div>
+                        <div class="form-group">
+                            <input type="email" id="preorder-email" required placeholder="Váš e-mail">
+                        </div>
+                        <div class="form-group">
+                            <input type="tel" id="preorder-phone" required placeholder="Telefonní číslo (+420...)">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="preorder-address" required placeholder="Dodací adresa (Ulice, Město, PSČ)">
+                        </div>
+
+                        <button type="submit" id="preorder-submit-btn" class="buy-button modal-buy-btn" style="width: 100%; margin-top: 10px;">
+                            Předobjednat na únor
+                        </button>
+                    </form>
+                </div>
             </div>
 
             <!-- PRAVÁ STRANA: VELKÝ OBRÁZEK -->
@@ -516,41 +535,6 @@
     </div>
 </div>
 </div>
-
-<!-- STRUKTURA VYSUNOVACÍHO KOŠÍKU -->
-<div id="cart-sidebar" class="cart-overlay">
-    <div class="cart-container">
-        <!-- Hlavička košíku -->
-        <div class="cart-header">
-            <h2>Nákupní košík</h2>
-            <button class="cart-close" onclick="toggleCart()">&times;</button>
-        </div>
-
-        <!-- Seznam přidaných produktů (plní se dynamicky přes JavaScript) -->
-        <div class="cart-items" id="cart-items-container">
-            <!-- Sem JavaScript vloží produkty -->
-            <p class="empty-cart-text">Váš košík je zatím prázdný.</p>
-        </div>
-
-        <!-- Spodní fixní část s finální částkou a platbou -->
-        <div class="cart-footer">
-            <div class="total-price-box">
-                <span>Celková částka:</span>
-                <strong id="cart-total-price">0 Kč</strong>
-            </div>
-            <!-- ÚDAJE ZÁKAZNÍKA K OBJEDNÁVCE (e-mail je nepovinný) -->
-            <div class="checkout-form">
-                <input type="text" id="order-name" placeholder="Jméno a příjmení *">
-                <input type="tel" id="order-phone" placeholder="Telefon *">
-                <input type="text" id="order-address" placeholder="Ulice a č. p., PSČ, město *">
-                <input type="email" id="order-email" placeholder="E-mail *">
-                <textarea id="order-note" rows="2" placeholder="Poznámka (nepovinné)"></textarea>
-            </div>
-            <button class="checkout-button" id="checkout-btn" onclick="checkoutOrder()">Koupit</button>
-        </div>
-    </div>
-</div>
-
 
 
 </body>
