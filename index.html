@@ -504,18 +504,18 @@
                     <h3>Předobjednat na únor</h3>
                     <p class="preorder-note">Zarezervujte si tento model nezávazně. Ozveme se vám s potvrzením.</p>
 
-                    <form id="preorder-form" class="preorder-form" action="https://formspree.io/f/xgakaalk" method="post">
+                    <form id="preorder-form" class="preorder-form" onsubmit="submitPreorder(event)">
                         <div class="form-group">
-                            <input type="text" id="preorder-name" required placeholder="Vaše jméno a příjmení">
+                            <input type="text" id="preorder-name" name="Jmeno" required placeholder="Vaše jméno a příjmení">
                         </div>
                         <div class="form-group">
-                            <input type="email" id="preorder-email" required placeholder="Váš e-mail">
+                            <input type="email" id="preorder-email" name="Email" required placeholder="Váš e-mail">
                         </div>
                         <div class="form-group">
-                            <input type="tel" id="preorder-phone" required placeholder="Telefonní číslo (+420...)">
+                            <input type="tel" id="preorder-phone" name="Telefon" required placeholder="Telefonní číslo (+420...)">
                         </div>
                         <div class="form-group">
-                            <input type="text" id="preorder-address" required placeholder="Dodací adresa (Ulice, Město, PSČ)">
+                            <input type="text" id="preorder-address" name="Adresa" required placeholder="Dodací adresa (Ulice, Město, PSČ)">
                         </div>
 
                         <button type="submit" id="preorder-submit-btn" class="buy-button modal-buy-btn" style="width: 100%; margin-top: 10px;">
