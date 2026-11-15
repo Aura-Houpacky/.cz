@@ -49,6 +49,8 @@ function openProductModal(cardElement) {
     document.getElementById('modal-material').innerText = materialText;
     document.getElementById('modal-description').innerText = descriptionText;
 
+    
+
     // Automaticky rozsvítí správné barevné kolečko podle toho, na jakou kartu se kliklo
     setupActiveColorDot(imgSrc);
 
@@ -89,7 +91,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // 2. Vytáhne nová data z kolečka
             const newImgSrc = dot.getAttribute('data-img');
-            const newPrice = dot.getAttribute('data-price');
             const newColorName = dot.getAttribute('data-color');
 
             // 3. Efekt plynulého prolnutí při změně fotky
@@ -99,7 +100,6 @@ document.addEventListener("DOMContentLoaded", () => {
             setTimeout(() => {
                 // Vymění zdroj obrázku a texty
                 modalImage.src = newImgSrc;
-                modalPrice.innerText = newPrice;
                 
                 // Dynamicky upraví název v hlavní textu (např. Aura Sand (Zelená))
                 const currentTitleBase = modalTitle.innerText.split('(')[0].trim();
@@ -127,195 +127,79 @@ function setupActiveColorDot(currentImgSrc) {
 // Stačí dovnitř openProductModal na úplný konec před otevírací třídu přidat:
 // setupActiveColorDot(imgSrc);
 
-// HLAVNÍ LOGIKA NÁKUPNÍHO KOŠÍKU
-// HLAVNÍ LOGIKA NÁKUPNÍHO KOŠÍKU S PODPOROU KUSŮ
-let cart = []; 
+// ==========================================================================
+// ODESLÁNÍ PŘEDOBJEDNÁVKY NA ÚNOR PŘES FORMSPREE
+// ==========================================================================
+const ORDER_FORM_URL = 'https://formspree.io';
 
-// Pomocná funkce pro měnění kusů v detailu produktu (+ / -)
-function changeModalQty(amount) {
-    const input = document.getElementById('modal-quantity-input');
-    let currentVal = parseInt(input.value);
-    currentVal += amount;
-    if (currentVal < 1) currentVal = 1;
-    input.value = currentVal;
-}
-
-function toggleCart() {
-    document.getElementById('cart-sidebar').classList.toggle('open');
-}
-
-// Upravená funkce: nyní přijímá i parametr quantity (počet kusů)
-function addToCart(title, price, imgSrc, quantity = 1) {
-    const numericPrice = parseInt(price.replace(/[^0-9]/g, ''));
-
-    // Zkontrolujeme, zda už přesně tato houpačka v košíku není
-    const existingItem = cart.find(item => item.title === title);
-
-    if (existingItem) {
-        // Pokud v košíku už je, jen přičteme nové kusy
-        existingItem.quantity += quantity;
-    } else {
-        // Pokud je nová, vložíme ji s daným počtem kusů
-        cart.push({
-            title: title,
-            price: numericPrice,
-            img: imgSrc,
-            quantity: quantity
-        });
-    }
-
-    updateCartUI();
-}
-
-// Funkce pro přímou změnu kusů uvnitř vysunutého košíku
-function changeCartItemQty(index, amount) {
-    cart[index].quantity += amount;
-    if (cart[index].quantity < 1) {
-        removeFromCart(index);
-        return;
-    }
-    updateCartUI();
-}
-
-function removeFromCart(index) {
-    cart.splice(index, 1);
-    updateCartUI();
-}
-
-// Překreslení košíku se započítáním kusů
-function updateCartUI() {
-    const container = document.getElementById('cart-items-container');
-    const totalElement = document.getElementById('cart-total-price');
-    const badgeElement = document.getElementById('cart-badge');
-    
-    // Spočítáme celkový počet kusů pro červenou ikonu v menu
-    const totalItemsCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-    badgeElement.innerText = totalItemsCount;
-
-    if (cart.length === 0) {
-        container.innerHTML = '<p class="empty-cart-text">Váš košík je zatím prázdný.</p>';
-        totalElement.innerText = '0 Kč';
-        return;
-    }
-
-    container.innerHTML = '';
-    let totalSum = 0;
-
-    cart.forEach((item, index) => {
-        // Cena za položku se násobí počtem jejích kusů
-        const itemTotal = item.price * item.quantity;
-        totalSum += itemTotal;
-        
-        container.innerHTML += `
-            <div class="cart-item">
-                <div class="cart-item-img">
-                    <img src="${item.img}" alt="${item.title}">
-                </div>
-                <div class="cart-item-details">
-                    <h4>${item.title}</h4>
-                    <div class="cart-item-price">${itemTotal.toLocaleString('cs-CZ')} Kč</div>
-                    
-                    <!-- Ovládání kusů přímo uvnitř košíku -->
-                    <div class="cart-item-qty-controls">
-                        <button onclick="changeCartItemQty(${index}, -1)" style="padding:0 5px; cursor:pointer;">-</button>
-                        <span>${item.quantity} ks</span>
-                        <button onclick="changeCartItemQty(${index}, 1)" style="padding:0 5px; cursor:pointer;">+</button>
-                    </div>
-                </div>
-                <button class="cart-item-remove" onclick="removeFromCart(${index})">Odstranit</button>
-            </div>
-        `;
-    });
-
-    totalElement.innerText = totalSum.toLocaleString('cs-CZ') + ' Kč';
-}
-
-// ODESLÁNÍ OBJEDNÁVKY E-MAILEM PŘES FORMSPREE (stejný formulář jako v Kontaktu)
-const ORDER_FORM_URL = 'https://formspree.io/f/mjyyppgo';
-
-// Kontrola, jestli adresa vypadá smysluplně (např. "Hlavní 12, 284 01 Kutná Hora")
 function isValidAddress(address) {
-    if (address.length < 8) return false;                       // příliš krátká
-    if (!/\d/.test(address)) return false;                      // chybí číslo domu
-    if (!/[a-zA-ZÀ-ž]{3,}/.test(address)) return false;          // chybí název ulice / obce
-    if (/(.)\1{3,}/i.test(address)) return false;                // "aaaa", "1111" apod.
+    if (address.length < 8) return false;
+    if (!/\d/.test(address)) return false;
+    if (!/[a-zA-ZÀ-ž]{3,}/.test(address)) return false;
+    if (/(.)\1{3,}/i.test(address)) return false;
     const letters = address.toLowerCase().replace(/[^a-zà-ž]/g, '');
-    if (new Set(letters).size < 4) return false;                // málo různých písmen ("abab 1")
-    if (!/[aeiouyáéěíóúůý]/i.test(letters)) return false;       // žádná samohláska ("xkcd 5")
+    if (new Set(letters).size < 4) return false;
+    if (!/[aeiouyáéěíóúůý]/i.test(letters)) return false;
     return true;
 }
 
-// Kontrola telefonu: 9 číslic, případně s předvolbou +420 / 00420
 function isValidPhone(phone) {
     const digits = phone.replace(/[\s\-\/()]/g, '');
     return /^(\+|00)?\d{9,12}$/.test(digits);
 }
 
-// E-mail je nepovinný, ale když ho někdo vyplní, musí mít správný tvar
 function isValidEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
 }
 
-async function checkoutOrder() {
-    if(cart.length === 0) {
-        alert('Košík je prázdný. Přidejte nejdříve nějakou houpačku.');
-        return;
-    }
+// Funkce, která se spustí po kliknutí na tlačítko "Předobjednat na únor"
+async function submitPreorder(event) {
+    event.preventDefault(); // Zabrání klasickému přesměrování stránky
 
-    const name = document.getElementById('order-name').value.trim();
-    const phone = document.getElementById('order-phone').value.trim();
-    const address = document.getElementById('order-address').value.trim();
-    const email = document.getElementById('order-email').value.trim();
-    const note = document.getElementById('order-note').value.trim();
+    const productName = document.getElementById('modal-title').innerText;
+    const productPrice = document.getElementById('modal-price').innerText;
+    const name = document.getElementById('preorder-name').value.trim();
+    const email = document.getElementById('preorder-email').value.trim();
+    const phone = document.getElementById('preorder-phone').value.trim();
+    const address = document.getElementById('preorder-address').value.trim();
 
     if (!name || !phone || !address || !email) {
-        alert('Vyplňte prosím jméno, telefon, doručovací adresu a e-mail, abychom vás mohli kontaktovat.');
+        alert('Vyplňte prosím všechny údaje (jméno, e-mail, telefon i adresu).');
         return;
     }
 
     if (!isValidAddress(address)) {
         alert('Zadejte prosím skutečnou doručovací adresu, např. „Hlavní 12, 284 01 Kutná Hora“.');
-        document.getElementById('order-address').focus();
+        document.getElementById('preorder-address').focus();
         return;
     }
 
     if (!isValidPhone(phone)) {
         alert('Zadejte prosím platné telefonní číslo, např. 608 123 456.');
-        document.getElementById('order-phone').focus();
+        document.getElementById('preorder-phone').focus();
         return;
     }
 
-    // E-mail je povinný a musí mít správný tvar
     if (!isValidEmail(email)) {
         alert('E-mail nemá správný tvar. Zadejte ho prosím ve tvaru jan.novak@email.cz.');
-        document.getElementById('order-email').focus();
+        document.getElementById('preorder-email').focus();
         return;
     }
 
-    // Sestavení přehledu objednávky do textu e-mailu
-    let total = 0;
-    const lines = cart.map(item => {
-        const itemTotal = item.price * item.quantity;
-        total += itemTotal;
-        return `${item.title} – ${item.quantity} ks × ${item.price.toLocaleString('cs-CZ')} Kč = ${itemTotal.toLocaleString('cs-CZ')} Kč`;
-    });
-
     const data = {
-        _subject: `Nová objednávka od: ${name}`,
-        jmeno: name,
-        telefon: phone,
-        adresa: address,
-        objednavka: lines.join('\n'),
-        celkem: total.toLocaleString('cs-CZ') + ' Kč',
-        poznamka: note || '-'
+        _subject: `Předobjednávka na únor: ${productName} (${name})`,
+        Produkt: productName,
+        Cena: productPrice,
+        Jmeno: name,
+        Email: email,
+        _replyto: email,
+        Telefon: phone,
+        Adresa: address
     };
-    // E-mail zákazníka – z e-mailu s objednávkou mu pak můžete rovnou odpovědět
-    data.email = email;
-    data._replyto = email;
 
-    const btn = document.getElementById('checkout-btn');
+    const btn = document.getElementById('preorder-submit-btn');
     btn.disabled = true;
-    btn.innerText = 'Odesílám…';
+    btn.innerText = 'Odesílám předobjednávku…';
 
     try {
         const response = await fetch(ORDER_FORM_URL, {
@@ -324,109 +208,71 @@ async function checkoutOrder() {
             body: JSON.stringify(data)
         });
 
-        if (!response.ok) {
-            // Vypíše do konzole přesný důvod, proč Formspree objednávku odmítl
-            const errData = await response.json().catch(() => ({}));
-            throw new Error('Chyba ' + response.status + ': ' + JSON.stringify(errData));
-        }
+        if (!response.ok) throw new Error('Chyba odeslání');
 
-        alert('Děkujeme za objednávku! Brzy se vám ozveme.');
-        cart = [];
-        updateCartUI();
-        ['order-name','order-phone','order-address','order-email','order-note']
-            .forEach(id => document.getElementById(id).value = '');
-        toggleCart();
+        alert('Děkujeme za předobjednávku na únor! Brzy se vám ozveme s potvrzením.');
+        document.getElementById('preorder-form').reset(); // Vymaže formulář
+        closeProductModal(); // Zavře okno produktu
     } catch (err) {
         console.error(err);
-        alert('Objednávku se nepodařilo odeslat. Zkuste to prosím znovu, nebo nám zavolejte.');
+        alert('Předobjednávku se nepodařilo odeslat. Zkuste to prosím znovu.');
     } finally {
         btn.disabled = false;
-        btn.innerText = 'Koupit';
+        btn.innerText = 'Předobjednat na únor';
     }
 }
 
-// AUTOMATICKÉ NAVÁZÁNÍ PROKLIKŮ NA VŠECHNY TVÉ KARTY
+// ==========================================================================
+// NAVÁZÁNÍ PROKLIKŮ NA KARTY PRODUKTŮ
+// ==========================================================================
 document.addEventListener("DOMContentLoaded", () => {
     const cards = document.querySelectorAll('.product-card');
     
     cards.forEach(card => {
         card.style.cursor = 'pointer';
-        
-        // 1. Proklik při kliknutí kamkoliv na plochu karty
-        card.addEventListener('click', (e) => {
-            openProductModal(card);
-        });
+        card.addEventListener('click', () => openProductModal(card));
 
-        // 2. POJISTKA: Najde tvé tlačítko uvnitř karty a přikáže mu udělat to samé
         const infoBtn = card.querySelector('.buy-button');
         if (infoBtn) {
             infoBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                e.stopPropagation(); // Zabrání tomu, aby se kliknutí "zaseklo" v prohlížeči
-                openProductModal(card); // Otevře ten samý detail produktu
+                e.stopPropagation();
+                openProductModal(card);
             });
         }
     });
 
-    // 3. Přidání z celostránkového detailu do košíku (potichu na pozadí)
-    const modalBuyBtn = document.querySelector('.modal-buy-btn');
-    if (modalBuyBtn) {
-        modalBuyBtn.addEventListener('click', () => {
-            const title = document.getElementById('modal-title').innerText;
-            const price = document.getElementById('modal-price').innerText;
-            const imgSrc = document.getElementById('modal-image').src;
-            
-            // Načte počet kusů z voliče
-            const qtyInput = document.getElementById('modal-quantity-input');
-            const chosenQty = parseInt(qtyInput.value) || 1;
-            
-            // Přidá do košíku
-            addToCart(title, price, imgSrc, chosenQty);
-            
-            // Vrátí volič na 1 kus pro příště
-            qtyInput.value = "1";
-            
-            // Zavře detail a nechá uživatele na webu, košík se potichu aktualizuje
-            closeProductModal(); 
+    // Napojení formuláře předobjednávky
+    const preorderForm = document.getElementById('preorder-form');
+    if (preorderForm) {
+        preorderForm.addEventListener('submit', submitPreorder);
+    }
+
+    // Automatické promazání kontaktního formuláře
+    const contactForm = document.querySelector('.contact-form');
+    if (contactForm) {
+        contactForm.addEventListener('submit', () => {
+            setTimeout(() => contactForm.reset(), 500);
         });
     }
 });
 
-
-
-/* ==========================================================================
-   FUNKCE PRO ŘAZENÍ PRODUKTŮ (OD NEJLEVNĚJŠÍHO / NEJDRAŽŠÍHO)
-   ========================================================================== */
+// ==========================================================================
+// ŘAZENÍ PRODUKTŮ PODLE CENY
+// ==========================================================================
 function sortProducts(selectElement) {
     let order = selectElement.value;
     if (order === 'default') return;
     
-    // Najde mřížku produktů, která následuje hned za tímto panelem
     let grid = selectElement.closest('.filter-sort-bar').nextElementSibling;
     if (!grid || !grid.classList.contains('products-grid')) return;
     
-    // Vytvoří pole z karet produktů
     let cards = Array.from(grid.querySelectorAll('.product-card'));
-    
-    // Seřadit pole karet podle schovaného čísla v data-price
     cards.sort((a, b) => {
         let priceA = parseInt(a.getAttribute('data-price')) || 0;
         let priceB = parseInt(b.getAttribute('data-price')) || 0;
         return order === 'asc' ? priceA - priceB : priceB - priceA;
     });
     
-    // Fyzicky přerovná karty v HTML kódu
     cards.forEach(card => grid.appendChild(card));
 }
-
-// Automaticky vymaže text z kolonek, jakmile se formulář odešle na internet
-document.addEventListener("DOMContentLoaded", () => {
-    const form = document.querySelector('.contact-form');
-    if (form) {
-        form.addEventListener('submit', () => {
-            setTimeout(() => {
-                form.reset(); // Vymaže jméno, e-mail i zprávu
-            }, 500); // Počká půl vteřiny, než Formspree data odešle, a pak políčka vyčistí
-        });
-    }
-});
