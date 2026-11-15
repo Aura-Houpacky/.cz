@@ -1038,3 +1038,45 @@ footer {
     font-size: 0.95rem;
     color: #333;
 }
+
+/* --- STYL PRO FORMULÁŘ PŘEDOBJEDNÁVKY --- */
+.preorder-box {
+    background-color: #f9f9f7;
+    padding: 25px;
+    border-radius: 20px;
+    border: 1px solid #e2e5e0;
+    margin-top: 10px;
+}
+
+.preorder-box h3 {
+    color: #4a5d4e;
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+.preorder-note {
+    font-size: 0.9rem;
+    color: #777;
+    margin-bottom: 15px;
+}
+
+.preorder-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.preorder-form input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #dcded9;
+    border-radius: 12px;
+    background-color: #ffffff;
+    font-size: 0.95rem;
+    outline: none;
+}
+
+.preorder-form input:focus {
+    border-color: #4a5d4e;
+}
